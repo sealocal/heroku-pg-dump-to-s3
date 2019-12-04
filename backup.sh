@@ -47,8 +47,8 @@ if [[ -z "$S3_BUCKET_PATH" ]]; then
   echo "Missing S3_BUCKET_PATH variable"
   exit 1
 fi
-if [[ -z "$DBURL_FOR_BACKUP" ]]; then
-  echo "Missing DBURL_FOR_BACKUP variable"
+if [[ -z "$DATABASE_URL" ]]; then
+  echo "Missing DATABASE_URL variable"
   exit 1
 fi
 if [[ -z "$DB_BACKUP_ENC_KEY" ]]; then
@@ -58,7 +58,7 @@ fi
 
 printf "${Green}Start dump${EC}"
 
-time pg_dump $DBURL_FOR_BACKUP | gzip | openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" > /tmp/"${DBNAME}_${FILENAME}".gz.enc
+time pg_dump $DATABASE_URL | gzip | openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" > /tmp/"${DBNAME}_${FILENAME}".gz.enc
 
 EXPIRATION_DATE=$(date -d "$EXPIRATION days" +"%Y-%m-%dT%H:%M:%SZ")
 
