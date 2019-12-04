@@ -19,9 +19,8 @@ heroku config:add AWS_DEFAULT_REGION=eu-central-1 --app <your_app>
 heroku config:add S3_BUCKET_PATH=your-bucket --app <your_app>
 heroku config:add S3_BUCKET_PATH=your-bucket --app <your_app>
 heroku config:add DB_BACKUP_ENC_KEY=password --app <your_app>
+heroku config:add DBURL_FOR_BACKUP=`heroku config:get DATABASE_URL --app <your_app>`
 ```
-
-Go to settings page of your Heroku application and add Config Var `DBURL_FOR_BACKUP` with the same value as var `DATABASE_URL`. This is our DB connection string.
 
 ### Heroku Scheduler Addon
 
