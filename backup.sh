@@ -65,5 +65,5 @@ EXPIRATION_DATE=$(date -d "$EXPIRATION days" +"%Y-%m-%dT%H:%M:%SZ")
 printf "${Green}Move dump to AWS${EC}"
 time /app/vendor/awscli/bin/aws s3 cp /tmp/"${DBNAME}_${FILENAME}".gz.enc s3://$S3_BUCKET_PATH/$DBNAME/"${DBNAME}_${FILENAME}".gz.enc --expires $EXPIRATION_DATE
 
-# cleaning after all
-rm -rf /tmp/"${DBNAME}_${FILENAME}".gz.enc
+# Remove the database dump from the app server
+rm /tmp/"${DBNAME}_${FILENAME}".gz.enc
