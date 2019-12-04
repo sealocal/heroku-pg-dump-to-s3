@@ -19,7 +19,6 @@ heroku config:add AWS_DEFAULT_REGION=eu-central-1 --app <your_app>
 heroku config:add S3_BUCKET_PATH=your-bucket --app <your_app>
 heroku config:add S3_BUCKET_PATH=your-bucket --app <your_app>
 heroku config:add DB_BACKUP_ENC_KEY=password --app <your_app>
-heroku config:add DBURL_FOR_BACKUP=`heroku config:get DATABASE_URL --app <your_app>`
 ```
 
 ### Heroku Scheduler Addon
