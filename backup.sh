@@ -56,13 +56,13 @@ if [[ -z "$DB_BACKUP_ENC_KEY" ]]; then
   exit 1
 fi
 
-printf "${Green}Start dump${EC}"
+printf "${Green}Dump backup of DATABASE_URL ...${EC}\n"
 
 time pg_dump $DATABASE_URL | gzip | openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" > /tmp/"${DBNAME}_${FILENAME}".gz.enc
 
 EXPIRATION_DATE=$(date -d "$EXPIRATION days" +"%Y-%m-%dT%H:%M:%SZ")
 
-printf "${Green}Move dump to AWS${EC}"
+printf "${Green}Copy Postgres dump to AWS S3 at S3_BUCKET_PATH...${EC}\n"
 time /app/vendor/awscli/bin/aws s3 cp /tmp/"${DBNAME}_${FILENAME}".gz.enc s3://$S3_BUCKET_PATH/$DBNAME/"${DBNAME}_${FILENAME}".gz.enc --expires $EXPIRATION_DATE
 
 # Remove the database dump from the app server
