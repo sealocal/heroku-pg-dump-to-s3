@@ -1,4 +1,4 @@
-## Heroku Buildpack: heroku-db-backup-s3
+## Heroku Buildpack: heroku-pg-dump-to-s3
 
 Capture Heroku Postgres backup with pg_dump and copy it to an s3 bucket. This buildpack installs the AWS CLI as a dependency.
 
@@ -7,7 +7,7 @@ Capture Heroku Postgres backup with pg_dump and copy it to an s3 bucket. This bu
 Add this buildpack to your Heroku app
 
 ```
-heroku buildpacks:add https://github.com/sealocal/heroku-db-backup-s3 --app <your_app>
+heroku buildpacks:add https://github.com/sealocal/heroku-pg-dump-to-s3 --app <your_app>
 ```
 
 ### Configure environment variables
