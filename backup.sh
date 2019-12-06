@@ -10,13 +10,14 @@ EXPIRATION="30"
 EXPIRATION_DATE=$(date --date="$EXPIRATION days" --iso-8601=seconds)
 FILENAME=`date --iso-8601=seconds`
 
-# terminate script on any fails
+# Exit this script immediately if a command exits with a non-zero status
 set -e
 
 while [[ $# -gt 1 ]]
 do
 key="$1"
 
+# Parse command-line arguments for this script
 case $key in
     -exp|--expiration)
     EXPIRATION="$2"
