@@ -37,11 +37,19 @@ heroku addons:open scheduler --app <your_app>
 
 In the browser, add a job to be scheduled, pasting the command below as the Run Command to be invoked, and set the schedule to your preference.
 
-```
-bash /app/vendor/backup.sh -db <somedbname>
+```bash
+bash /app/vendor/backup.sh --dbname <string_for_name> --expiration <number_of_days>
 ```
 
-The `db` argument is used to build the filename of the Postgres dump.
+```log
+--dbname, -db
+
+    string prefix for filename of the Postgres dump
+
+--expiration, -exp
+
+    set the expiration date of the file that is uploaded to S3
+```
 
 ### Debugging
 
