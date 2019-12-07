@@ -62,10 +62,20 @@ fi
 
 printf "${Green}Dump backup of DATABASE_URL ...${EC}\n"
 
-time pg_dump $DATABASE_URL | gzip | openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" > /tmp/"${DBNAME}_${FILENAME}".gz.enc
+# Borrow pg_dump flags from pg:dump per heroku support article
+# https://help.heroku.com/7U1BTYHB/how-can-i-take-a-logical-backup-of-large-heroku-postgres-databases
+time pg_dump \
+  --no-acl --no-owner --quote-all-identifiers \
+  --format=plain --compress=4 \
+  $DATABASE_URL > ./plain_format.sql.gz
+
+# Encrypt the plain format backup
+openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" \
+  -in ./plain_format.sql.gz \
+  -out /tmp/"${DBNAME}_${FILENAME}".gz.enc
 
 printf "${Green}Copy Postgres dump to AWS S3 at S3_BUCKET_PATH...${EC}\n"
 time /app/vendor/awscli/bin/aws s3 cp /tmp/"${DBNAME}_${FILENAME}".gz.enc s3://$S3_BUCKET_PATH/$DBNAME/"${DBNAME}_${FILENAME}".gz.enc --expires $EXPIRATION_DATE
 
 # Remove the database dump from the app server
-rm /tmp/"${DBNAME}_${FILENAME}".gz.enc
+rm /tmp/"${DBNAME}_${FILENAME}".gz.enc ./plain_format.sql.gz
