@@ -1,14 +1,13 @@
 #!/bin/bash
 
 PYTHONHOME=/app/vendor/awscli/
-DBNAME=""
 
 Green='\033[0;32m'
 EC='\033[0m'
 
 EXPIRATION="30"
 EXPIRATION_DATE=$(date --date="$EXPIRATION days" --iso-8601=seconds)
-FILENAME=`date --iso-8601=seconds`
+TIMESTAMP=$(date --iso-8601=seconds)
 
 # Exit this script immediately if a command exits with a non-zero status
 set -e
@@ -30,6 +29,9 @@ case $key in
 esac
 shift
 done
+
+DBNAME=${DBNAME:='database'}
+FILENAME="${DBNAME}_${TIMESTAMP}"
 
 if [[ -z "$DBNAME" ]]; then
   echo "Missing DBNAME variable"
@@ -67,15 +69,16 @@ printf "${Green}Dump backup of DATABASE_URL ...${EC}\n"
 time pg_dump \
   --no-acl --no-owner --quote-all-identifiers \
   --format=plain --compress=4 \
-  $DATABASE_URL > ./plain_format.sql.gz
+  $DATABASE_URL > ./"${FILENAME}"_plain_format.sql.gz
 
 # Encrypt the plain format backup
 openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" \
-  -in ./plain_format.sql.gz \
-  -out /tmp/"${DBNAME}_${FILENAME}".gz.enc
+  -in ./"${FILENAME}"_plain_format.sql.gz \
+  -out /tmp/"${FILENAME}"_plain_format.gz.enc
 
 printf "${Green}Copy Postgres dump to AWS S3 at S3_BUCKET_PATH...${EC}\n"
-time /app/vendor/awscli/bin/aws s3 cp /tmp/"${DBNAME}_${FILENAME}".gz.enc s3://$S3_BUCKET_PATH/$DBNAME/"${DBNAME}_${FILENAME}".gz.enc --expires $EXPIRATION_DATE
+time /app/vendor/awscli/bin/aws s3 cp /tmp/"${FILENAME}"_plain_format.gz.enc s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_plain_format.gz.enc --expires $EXPIRATION_DATE
 
-# Remove the database dump from the app server
-rm /tmp/"${DBNAME}_${FILENAME}".gz.enc ./plain_format.sql.gz
+# Remove the database dump(s) from the app server
+rm -v /tmp/"${FILENAME}"_plain_format.gz.enc ./"${FILENAME}"_plain_format.sql.gz
+
