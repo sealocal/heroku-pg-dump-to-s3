@@ -110,10 +110,13 @@ time pg_dump \
   --format=tar \
   --file=./"${FILENAME}"_tar_format.tar $DATABASE_URL
 
+printf "compress tar format ...\n"
+gzip ./"${FILENAME}"_tar_format.tar
+
 printf "Encrypt the tar format backup ...\n"
 openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" \
-  -in ./"${FILENAME}"_tar_format.tar \
-  -out /tmp/"${FILENAME}"_tar_format.enc
+  -in ./"${FILENAME}"_tar_format.tar.gz \
+  -out /tmp/"${FILENAME}"_tar_format.gz.enc
 
 printf "${Green}Copy Postgres dumps to AWS S3 at S3_BUCKET_PATH...${EC}\n"
 printf "upload plain format ...\n"
@@ -133,11 +136,11 @@ time /app/vendor/awscli/bin/aws s3 cp \
 
 printf "upload tar format ...\n"
 time /app/vendor/awscli/bin/aws s3 cp \
-  /tmp/"${FILENAME}"_tar_format.enc \
-  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_tar_format.enc --expires $EXPIRATION_DATE
+  /tmp/"${FILENAME}"_tar_format.gz.enc \
+  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_tar_format.gz.enc --expires $EXPIRATION_DATE
 
 # Remove the database dumps from the app server
 rm -v /tmp/"${FILENAME}"_plain_format.gz.enc ./"${FILENAME}"_plain_format.sql.gz
 rm -v /tmp/"${FILENAME}"_custom_format.enc ./"${FILENAME}"_custom_format.dump
 rm -rv /tmp/"${FILENAME}"_directory_format.gz.enc ./"${FILENAME}"_directory_format.tar.gz ./"${FILENAME}"_directory_format
-rm -v /tmp/"${FILENAME}"_tar_format.enc ./"${FILENAME}"_tar_format.tar
+rm -v /tmp/"${FILENAME}"_tar_format.gz.enc ./"${FILENAME}"_tar_format.tar.gz
