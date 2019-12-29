@@ -4,6 +4,12 @@ Capture Heroku Postgres backup with pg_dump and copy it to an s3 bucket. This bu
 
 ### Installation
 
+This buildpack depends on the AWS CLI.  Install awscli with Heroku buildpacks.
+
+```
+$ heroku buildpacks:add --index 1 heroku-community/awscli --app <your_app>
+```
+
 Add this buildpack to your Heroku app
 
 ```

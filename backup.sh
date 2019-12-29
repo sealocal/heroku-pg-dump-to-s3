@@ -1,7 +1,5 @@
 #!/bin/bash
 
-PYTHONHOME=/app/vendor/awscli/
-
 Green='\033[0;32m'
 EC='\033[0m'
 
@@ -114,22 +112,22 @@ openssl enc -aes-256-cbc -e -pass "env:DB_BACKUP_ENC_KEY" \
 
 printf "${Green}Copy Postgres dumps to AWS S3 at S3_BUCKET_PATH...${EC}\n"
 printf "upload plain format ...\n"
-time /app/vendor/awscli/bin/aws s3 cp \
+time aws s3 cp \
   /tmp/"${FILENAME}"_plain_format.gz.enc \
   s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_plain_format.gz.enc
 
 printf "upload custom format ...\n"
-time /app/vendor/awscli/bin/aws s3 cp \
+time aws s3 cp \
   /tmp/"${FILENAME}"_custom_format.enc \
   s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_custom_format.enc
 
 printf "upload directroy format ...\n"
-time /app/vendor/awscli/bin/aws s3 cp \
+time aws s3 cp \
   /tmp/"${FILENAME}"_directory_format.gz.enc \
   s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_directory_format.gz.enc
 
 printf "upload tar format ...\n"
-time /app/vendor/awscli/bin/aws s3 cp \
+time aws s3 cp \
   /tmp/"${FILENAME}"_tar_format.gz.enc \
   s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_tar_format.gz.enc
 
