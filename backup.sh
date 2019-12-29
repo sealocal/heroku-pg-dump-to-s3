@@ -5,8 +5,6 @@ PYTHONHOME=/app/vendor/awscli/
 Green='\033[0;32m'
 EC='\033[0m'
 
-EXPIRATION="30"
-EXPIRATION_DATE=$(date --date="$EXPIRATION days" --iso-8601=seconds)
 TIMESTAMP=$(date --iso-8601=seconds)
 
 # Exit this script immediately if a command exits with a non-zero status
@@ -18,10 +16,6 @@ key="$1"
 
 # Parse command-line arguments for this script
 case $key in
-    -exp|--expiration)
-    EXPIRATION="$2"
-    shift
-    ;;
     -db|--dbname)
     DBNAME="$2"
     shift
@@ -122,22 +116,22 @@ printf "${Green}Copy Postgres dumps to AWS S3 at S3_BUCKET_PATH...${EC}\n"
 printf "upload plain format ...\n"
 time /app/vendor/awscli/bin/aws s3 cp \
   /tmp/"${FILENAME}"_plain_format.gz.enc \
-  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_plain_format.gz.enc --expires $EXPIRATION_DATE
+  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_plain_format.gz.enc
 
 printf "upload custom format ...\n"
 time /app/vendor/awscli/bin/aws s3 cp \
   /tmp/"${FILENAME}"_custom_format.enc \
-  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_custom_format.enc --expires $EXPIRATION_DATE
+  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_custom_format.enc
 
 printf "upload directroy format ...\n"
 time /app/vendor/awscli/bin/aws s3 cp \
   /tmp/"${FILENAME}"_directory_format.gz.enc \
-  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_directory_format.gz.enc --expires $EXPIRATION_DATE
+  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_directory_format.gz.enc
 
 printf "upload tar format ...\n"
 time /app/vendor/awscli/bin/aws s3 cp \
   /tmp/"${FILENAME}"_tar_format.gz.enc \
-  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_tar_format.gz.enc --expires $EXPIRATION_DATE
+  s3://$S3_BUCKET_PATH/$DBNAME/"${FILENAME}"_tar_format.gz.enc
 
 # Remove the database dumps from the app server
 rm -v /tmp/"${FILENAME}"_plain_format.gz.enc ./"${FILENAME}"_plain_format.sql.gz
